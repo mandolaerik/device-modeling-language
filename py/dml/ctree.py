@@ -2892,7 +2892,7 @@ class EachIn(Expression):
             for sub in subobjs:
                 sub.traits.mark_referenced(self.trait)
 
-    def read(self):
+    def read(self, each_in_this=False):
         subobjs = list(self.subobjs_implementing(self.node, self.trait))
         if not subobjs:
             # Iteration will never start, so NULL will suffice
@@ -2905,6 +2905,8 @@ class EachIn(Expression):
         else:
             array_size = 1
             array_idx = "0"
+        if each_in_this:
+            array_idx = "0xffffffffu"
         return '(_each_in_t){%s, 0, %d, %s, %d}' % (
             self.ident(self.node, self.trait),
             len(subobjs), array_idx, array_size)
@@ -3325,8 +3327,12 @@ class TraitParameter(Expression):
         t = realtype(self.traitref.ctype())
         assert isinstance(t, TTrait)
         vtable_type = f'struct _{cident(t.trait.name)}'
-        return (f'VTABLE_PARAM({self.traitref.read()}, {vtable_type}'
-                f', {self.name})')
+        if isinstance(realtype(self.type), TTraitList):
+            return (f'_vtable_sequence_param({self.traitref.read()},'
+                    f' offsetof({vtable_type}, {self.name}))')
+        else:
+            return (f'VTABLE_PARAM({self.traitref.read()}, {vtable_type}'
+                    f', {self.name})')
 
 class TraitSessionRef(Expression):
     '''A reference to a trait session variable.
