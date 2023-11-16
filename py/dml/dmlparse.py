@@ -1773,7 +1773,7 @@ def expression_ident(t):
 
 @prod_dml14
 def expression_ident(t):
-    '''expression : objident
+    '''expression : objident_or_underscore
                   | DEFAULT'''
     t[0] = ast.variable(site(t), t[1])
 
@@ -2643,19 +2643,25 @@ def objident(t):
                 | REGISTER'''
     t[0] = t[1]
 
-def ident_rule(idents):
-    return 'ident : ' +  "\n| ".join(idents)
+@prod_dml14
+def objident_or_underscore(t):
+    '''objident_or_underscore : ident_or_underscore
+                              | REGISTER'''
+    t[0] = t[1]
+
+def ident_rule(name, idents):
+    return f'{name} : ' +  "\n| ".join(idents)
 
 # Most DML top-level keywords are also allowed as identifiers.
 
 @prod_dml12
-@lex.TOKEN(ident_rule(dmllex12.reserved_idents + (
-    'ID', 'EACH', 'SESSION', 'SEQUENCE')))
+@lex.TOKEN(ident_rule('ident', dmllex12.reserved_idents + (
+    'ID', 'EACH', 'SESSION', 'SEQUENCE', '_')))
 def ident(t):
     t[0] = t[1]
 
 @prod_dml14
-@lex.TOKEN(ident_rule(dmllex14.reserved_idents + ('ID',)))
+@lex.TOKEN(ident_rule('ident', dmllex14.reserved_idents + ('ID',)))
 def ident(t):
     t[0] = t[1]
 
@@ -2664,6 +2670,11 @@ def ident_enforce_not_discard_ref(site, ident):
         and site.dml_version() != (1, 2)
         and compat.discard_ref_shadowing not in dml.globals.enabled_compat):
         report(ESYNTAX(site, '_', "reserved identifier"))
+@prod_dml14
+@lex.TOKEN(ident_rule('ident_or_underscore',
+                      dmllex14.reserved_idents + ('ID', '_')))
+def ident_or_underscore(t):
+    t[0] = t[1]
 
 reserved_words_12 = [
     'CLASS', 'ENUM', 'NAMESPACE', 'PRIVATE', 'PROTECTED', 'PUBLIC',
@@ -2674,14 +2685,26 @@ reserved_words_14 = reserved_words_12 + ['CALL', 'AUTO',
                                          'ASYNC', 'AWAIT', 'WITH']
 
 @prod_dml12
-@lex.TOKEN(ident_rule(reserved_words_12))
+@lex.TOKEN(ident_rule('ident', reserved_words_12))
 def reserved(t):
     raise ESYNTAX(site(t, 1), str(t[1]), "reserved word")
 
 @prod_dml14
-@lex.TOKEN(ident_rule(reserved_words_14))
+@lex.TOKEN(ident_rule('ident', reserved_words_14))
 def reserved(t):
     raise ESYNTAX(site(t, 1), str(t[1]), "reserved word")
+
+@prod_dml14
+@lex.TOKEN(ident_rule('ident_or_underscore', reserved_words_14))
+def reserved_(t):
+    raise ESYNTAX(site(t, 1), str(t[1]), "reserved word")
+
+@prod_dml14
+def ident_underscore(t):
+    '''ident : _'''
+    if compat.discard_ref_shadowing not in dml.globals.enabled_compat:
+        report(ESYNTAX(site(t), '_', "reserved identifier"))
+    t[0] = t[1]
 
 # Error handling
 @prod

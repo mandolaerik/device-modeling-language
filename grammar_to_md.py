@@ -78,7 +78,8 @@ terminals = { 'PLUS'           : '"<b>+</b>"',
               'BCONST'         : '<i>binary-literal</i>',
               'FCONST'         : '<i>float-literal</i>',
               'ELLIPSIS'       : '<i>"..."</i>',
-              '<empty>'        : '&lt;empty&gt;'
+              '<empty>'        : '&lt;empty&gt;',
+              '_'              : '<b>_</b>'
              }
 
 for k in (reserved_idents

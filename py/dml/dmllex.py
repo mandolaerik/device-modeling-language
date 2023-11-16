@@ -21,7 +21,7 @@ reserved = reserved_idents_common + (
     'AFTER', 'ASSERT', 'BITFIELDS', 'CALL', 'CAST', 'DEFINED', 'ERROR',
     'FOREACH', 'IN', 'IS', 'LAYOUT', 'LOCAL', 'LOG', 'SELECT',
     'SIZEOFTYPE', 'TYPEOF', 'UNDEFINED', 'VECT', '_WARNING', 'WHERE',
-    'EACH', 'SESSION', 'SEQUENCE',
+    'EACH', 'SESSION', 'SEQUENCE', '_',
 
     # ANSI C reserved words
     'AUTO', 'BREAK', 'CASE', 'CHAR', 'CONST', 'CONTINUE', 'DEFAULT',
