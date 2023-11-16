@@ -5,6 +5,8 @@
 dml 1.4;
 device test;
 
+/// DMLC-FLAG --no-compat=discard_ref_shadowing
+
 header %{
     #define FUNCLIKE_MACRO() 4
     #define VARLIKE_MACRO ++counter
