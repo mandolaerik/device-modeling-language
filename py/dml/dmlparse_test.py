@@ -34,12 +34,14 @@ def parse(contents):
 
 class test_emptyprod_based_sites(unittest.TestCase):
     def test(self):
+        # Test that sites are actually fixed up by fixup_emptyprod_lexpos.
+        # Without it, sites would be ruined by empty production rules.
         ast = parse('''
 method m() {}
     group g;
 '''.strip())
         self.assertEqual((ast.site.lineno, ast.site.colno), (1, 1))
-        stmts = ast.args[1]
+        [_, stmts] = ast.args
         self.assertEqual([stmt.kind for stmt in stmts], ['method', 'object'])
         self.assertEqual((stmts[0].site.lineno, stmts[0].site.colno), (1, 1))
         self.assertEqual((stmts[1].site.lineno, stmts[1].site.colno), (2, 5))
