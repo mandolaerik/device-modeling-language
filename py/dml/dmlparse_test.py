@@ -16,7 +16,7 @@ def parse(contents):
 
 class test_emptyprod_based_sites(unittest.TestCase):
     def test_calls_from_empty_rules(self):
-        empty_prod_re = re.compile(r'[:|]\s*(?:$|\|)')
+        empty_prod_re = re.compile(r':\s*$')
         assert empty_prod_re.search('foo : \n')
         assert not empty_prod_re.search('foo : something\n')
 
