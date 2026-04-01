@@ -847,13 +847,16 @@ def trait_template(t):
     t[0] = t[3]
 
 @prod_dml14
+def method_qualifiers_empty(t):
+    '''method_qualifiers :'''
+    fixup_emptyprod_lexpos(t)
+    t[0] = []
+
+@prod_dml14
 def method_qualifiers(t):
-    '''method_qualifiers :
-                         | INDEPENDENT
+    '''method_qualifiers : INDEPENDENT
                          | INDEPENDENT STARTUP
                          | INDEPENDENT STARTUP MEMOIZED'''
-    if len(t) == 1:
-        fixup_emptyprod_lexpos(t)
     t[0] = list(itertools.islice(t, 1, None))
 
 @prod_dml12
